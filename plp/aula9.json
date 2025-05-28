@@ -1,0 +1,53 @@
+{
+  "concorrencia": {
+    "explicacao": "Concorrência é a capacidade de lidar com várias tarefas em andamento, alternando entre elas para simular simultaneidade. Está ligada ao paradigma imperativo e concorrente, onde controlamos o fluxo do programa diretamente. Em linguagens como Python, usamos threads ou async para isso.",
+    "relacao_com_plp": "No paradigma imperativo, controlamos diretamente as tarefas e seu estado. A concorrência exige gerenciamento cuidadoso de recursos compartilhados e sincronização. Já no paradigma funcional, a imutabilidade facilita concorrência segura sem locks.",
+    "codigo_exemplo": "import threading\n\ndef tarefa(nome):\n    print(f\"Executando {nome}\")\n\nthreads = []\nfor i in range(3):\n    t = threading.Thread(target=tarefa, args=(f'Tarefa {i}',))\n    threads.append(t)\n    t.start()\n\nfor t in threads:\n    t.join()",
+    "explicacao_codigo": "Três threads são criadas para executar a função 'tarefa'. Cada uma imprime seu nome. As threads são iniciadas e depois aguardamos com 'join' até que todas terminem. Isso simula tarefas concorrentes.",
+    "perguntas_e_respostas": [
+      {
+        "pergunta": "Qual a diferença entre concorrência e paralelismo?",
+        "resposta": "Concorrência é alternar entre várias tarefas rapidamente, e paralelismo é executar várias tarefas ao mesmo tempo em diferentes núcleos de CPU."
+      },
+      {
+        "pergunta": "Por que concorrência pode causar erros?",
+        "resposta": "Porque múltiplas threads podem acessar e modificar dados ao mesmo tempo, causando condições de corrida."
+      }
+    ]
+  },
+  "excecoes": {
+    "explicacao": "Exceções são eventos que interrompem o fluxo normal do programa. No paradigma imperativo, usamos blocos try/except para capturar e tratar esses erros. No funcional, erros são tratados com tipos como Maybe/Either, pois exceções quebram a previsibilidade das funções puras.",
+    "relacao_com_plp": "Exceções fazem parte do paradigma imperativo como mecanismo de controle de fluxo. No funcional, evitam-se exceções para manter funções puras e previsíveis.",
+    "codigo_exemplo": "def dividir(a, b):\n    try:\n        return a / b\n    except ZeroDivisionError:\n        return \"Erro: divisão por zero não é permitida.\"\n\nprint(dividir(10, 2))\nprint(dividir(10, 0))",
+    "explicacao_codigo": "A função 'dividir' tenta dividir dois números. Se o divisor for zero, uma exceção do tipo ZeroDivisionError é capturada e uma mensagem amigável é retornada.",
+    "perguntas_e_respostas": [
+      {
+        "pergunta": "Por que usamos try/except?",
+        "resposta": "Para tratar erros sem travar o programa e permitir uma resposta amigável ao usuário."
+      },
+      {
+        "pergunta": "Por que exceções não são comuns em linguagens funcionais?",
+        "resposta": "Porque funções puras não devem ter efeitos colaterais ou saltos inesperados. Em vez disso, usam-se tipos como Maybe ou Either para indicar falha de forma explícita."
+      }
+    ]
+  },
+  "concorrencia_com_excecoes": {
+    "explicacao": "Ao combinar concorrência e exceções, devemos tratar erros individualmente em cada thread ou processo. Isso evita que uma falha em uma tarefa paralela derrube o sistema inteiro. Cada tarefa deve ser protegida com seu próprio bloco de tratamento.",
+    "relacao_com_plp": "No imperativo concorrente, o controle de exceções em múltiplas threads exige atenção, pois o erro em uma thread não pode ser capturado diretamente por outra. No funcional concorrente, processos são isolados e supervisionados (como em Elixir).",
+    "codigo_exemplo": "import threading\n\ndef ler_arquivo(nome):\n    try:\n        with open(nome, 'r') as f:\n            print(f\"[{threading.current_thread().name}] Lendo arquivo {nome}\")\n            conteudo = f.read()\n            print(conteudo)\n    except FileNotFoundError:\n        print(f\"[{threading.current_thread().name}] Arquivo não encontrado: {nome}\")\n\nnomes_arquivos = [\"dados1.txt\", \"dados2.txt\", \"inexistente.txt\"]\n\nthreads = []\nfor nome in nomes_arquivos:\n    t = threading.Thread(target=ler_arquivo, args=(nome,))\n    threads.append(t)\n    t.start()\n\nfor t in threads:\n    t.join()",
+    "explicacao_codigo": "Três arquivos são lidos por três threads. Um deles não existe, o que geraria uma exceção. Cada thread trata sua própria exceção, mantendo a robustez e permitindo que as demais tarefas sigam funcionando.",
+    "perguntas_e_respostas": [
+      {
+        "pergunta": "O que acontece se uma thread falhar ao ler um arquivo?",
+        "resposta": "Ela trata o erro internamente com try/except. Isso evita que a falha afete as outras threads."
+      },
+      {
+        "pergunta": "Como linguagens funcionais tratam falhas concorrentes?",
+        "resposta": "Usam processos isolados e supervisores. Se um processo falha, é reiniciado por um supervisor sem comprometer o restante do sistema. Isso segue a filosofia 'Let it crash'."
+      }
+    ]
+  }
+}
+
+
+{  "documentacao": "https://docs.python.org/3/tutorial/errors.html"}
